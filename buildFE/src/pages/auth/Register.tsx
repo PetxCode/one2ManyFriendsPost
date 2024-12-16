@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createUser } from "../../api/userAPI";
+import { Link } from "react-router-dom";
 
 const Register = () => {
   const [email, setEmail] = useState<string>("");
@@ -66,8 +67,8 @@ const Register = () => {
         <br />
         <label>Password:</label>{" "}
         <input
-          type="password"
-          name="password"
+          // type="password"
+          // name="password"
           className="border w-[300px] h-[45px] rounded-md "
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -78,7 +79,7 @@ const Register = () => {
         </button>
       </form>
       <p>
-        Already have an account? <a href="/login">Login</a>
+        Already have an account? <Link to="/auth/login">Login</Link>
       </p>
     </div>
   );

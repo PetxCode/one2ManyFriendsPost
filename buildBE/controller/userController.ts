@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import userModel from "../model/userModel";
 import cloudinary from "../utils/cloudinary";
+import path from "node:path";
+import fs from "node:fs";
+import { removeFileUpload } from "../utils/removeFileUpload";
 
 export const createUser = async (
   req: any,
@@ -10,16 +13,15 @@ export const createUser = async (
   try {
     const { password, userName, email } = req.body;
 
-    console.log("here1");
+    const folderPath = path.join(__dirname, "../uploads");
+
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
 
-    console.log("here2", req.file);
     const { secure_url, public_id }: any = await cloudinary.uploader.upload(
       req.file.path
     );
 
-    console.log("here3");
     const user = await userModel.create({
       password: hashed,
       userName,
@@ -28,7 +30,8 @@ export const createUser = async (
       avatarID: public_id,
     });
 
-    console.log("here4");
+    removeFileUpload(folderPath);
+
     return res.status(201).json({
       message: "creating user",
       status: 201,
@@ -54,9 +57,10 @@ export const signInUser = async (
     });
 
     if (user) {
-      if (user.password === password) {
+      const match = await bcrypt.compare(password, user.password);
+      if (match) {
         return res.status(201).json({
-          message: "error creating user",
+          message: "login user",
           status: 201,
           data: user,
         });
