@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { useOneReadUser, useReadUser } from "../../hooks/useReadPost";
 import { addFriend } from "../../api/userAPI";
 import { Link, Outlet } from "react-router-dom";
-
+import _ from "lodash";
 const HomePage = () => {
   // ;
   return (
@@ -27,7 +27,7 @@ const HomePage = () => {
           </div>
 
           <div className="m-4 text-[12px]">
-            <p>Add Friends</p>
+            <p>Suggusted Friends</p>
 
             <div className="mt-5">
               <AddFriends />
@@ -51,7 +51,6 @@ const ViewFriends = () => {
   const user = useSelector((state: any) => state.user);
   const { data } = useOneReadUser(user?._id);
 
-  console.log("reading: ", data);
   return (
     <div className="mt-5">
       <h1 className="m-4">Friends</h1>
@@ -60,22 +59,7 @@ const ViewFriends = () => {
       {data?.friends?.length > 0 ? (
         <div>
           {data?.friends?.map((el: any, i: number) => (
-            <div>
-              <div className="border rounded-md bg-white m-4 p-4 flex gap-2">
-                <div className="w-16 h-16 rounded-full border" />
-                <div>
-                  <p>name</p>
-                  <button
-                    className=" bg-black text-white px-6 py-2 rounded-md text-[12px]"
-                    onClick={() => {
-                      console.log("hjjj: ", el);
-                    }}
-                  >
-                    <Link to={`/${el}`}>View Detail</Link>
-                  </button>
-                </div>
-              </div>
-            </div>
+            <Friends el={el} />
           ))}
         </div>
       ) : (
@@ -85,12 +69,36 @@ const ViewFriends = () => {
   );
 };
 
+const Friends: FC<any> = ({ el }) => {
+  const { data } = useOneReadUser(el);
+  return (
+    <div>
+      <div className="border rounded-md bg-white m-4 p-4 flex gap-2">
+        <img
+          src={data?.avatar}
+          alt={data?.userName}
+          className="w-16 h-16 rounded-full border"
+        />
+        <div>
+          <p>{data?.userName}</p>
+          <button
+            className=" bg-black text-white px-6 py-2 rounded-md text-[12px]"
+            onClick={() => {}}
+          >
+            <Link to={`/${el}`}>View Detail</Link>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const AddFriends = () => {
   const { data } = useReadUser();
 
   return (
     <div>
-      {data?.map((el: any, i: number) => (
+      {_.shuffle(data)?.map((el: any, i: number) => (
         <div>
           {i <= 4 && (
             <div>
